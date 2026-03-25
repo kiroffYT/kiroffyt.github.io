@@ -1,0 +1,34 @@
+.project {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #6da80008;
+    position: relative;
+    border: 1px solid #6da80010;
+    border-radius: 20px;
+    box-shadow: 0 0 15px rgba(109, 168, 0, 0.5);
+
+    margin: 20px auto;
+    width: 45em;
+    
+    padding: 15px;
+    height: 8em;
+}
+
+.project h2, .project p {
+    transform: none; 
+    margin: 5px 0;
+    text-align: center;
+    width: 100%;
+}
+
+.project a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.project a:hover {
+    color: #ffffff;
+    transition: 0.3s;
+}
