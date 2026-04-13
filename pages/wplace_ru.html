@@ -51,9 +51,63 @@
             margin-top: 15px;
             padding-top: 15px;
         }
+
+        #pixel-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Фон должен быть сзади контента */
+            overflow: hidden;
+            background-color: #0a0a0a; /* Очень темный фон */
+        }
+
+        #pixel-bg::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px; /* Размер строки */
+            z-index: 2;
+        }
+
+        #pixel-bg::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gAFWPAAS4OEBswZcEEXIghDAApsBofwS/wEwAAAABJRU5ErkJggg=='); /* Микро-пиксель для шума */
+            background-repeat: repeat;
+            opacity: 0.05; /* Еле заметно */
+            z-index: 1;
+            animation: noise 0.2s infinite; /* Частое мерцание */
+        }
+
+        @keyframes noise {
+            0% { transform: translate(0,0); }
+            10% { transform: translate(-5px, -5px); }
+            20% { transform: translate(-10px, 5px); }
+            30% { transform: translate(5px, -10px); }
+            40% { transform: translate(-5px, 15px); }
+            50% { transform: translate(-10px, -5px); }
+            60% { transform: translate(15px, 5px); }
+            70% { transform: translate(0px, 10px); }
+            80% { transform: translate(-15px, 0px); }
+            90% { transform: translate(10px, 5px); }
+            100% { transform: translate(5px, 0px); }
+        }
     </style>
 </head>
 <body>
+    <div id="pixel-bg"></div>
 
     <div class="pixel-border">
         <h1>ВНИМАНИЕ, КАЗАК!</h1>
