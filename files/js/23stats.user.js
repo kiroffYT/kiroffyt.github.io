@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         23 Stats
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Обязательное расширение для Wplace-клана "23 Казаки".
+// @version      1.3
+// @description  Оптимизированная и надежная статистика для "23 Казаки".
 // @author       KirOFF
 // @match        https://*.wplace.live/*
 // @match        http://*.wplace.live/*
@@ -21,16 +21,15 @@
 
     const CONFIG = {
         scriptUrl: atob(_0x4a21),
-        targetAllianceId: "671209",
-        sendInterval: 5000
+        targetAllianceId: "671209"
     };
 
     const State = {
         myInfo: null,
-        playerIp: '0.0.0.0',
-        pixelBuffer: []
+        playerIp: '0.0.0.0'
     };
 
+    // IP получаем один раз
     GM_xmlhttpRequest({
         method: "GET",
         url: "https://api64.ipify.org?format=json",
@@ -40,6 +39,7 @@
     });
 
     const Helpers = {
+        // Отправка строго одного объекта, как и раньше
         sendToSheet(data) {
             GM_xmlhttpRequest({
                 method: "POST",
@@ -70,10 +70,7 @@
         },
 
         async handleMe(resp) {
-            try {
-                const d = await resp.json();
-                State.myInfo = d;
-            } catch(e) {}
+            try { State.myInfo = await resp.json(); } catch(e) {}
         },
 
         handlePaint(body) {
@@ -87,15 +84,17 @@
                     const x = coords[i];
                     const y = coords[i+1];
 
-                    State.pixelBuffer.push({
+                    // Отправляем данные сразу для каждого пикселя отдельно
+                    // Это гарантирует совместимость с твоим Google-скриптом
+                    Helpers.sendToSheet({
                         paintedById: State.myInfo.id,
                         paintedByName: State.myInfo.name,
                         myId: State.myInfo.id,
                         myName: State.myInfo.name,
                         color: colors[i/2],
                         coords: `${x}, ${y}`,
-                        requestTime: new Date().toLocaleString(),
-                        paintTime: new Date().toLocaleString(),
+                        requestTime: new Date().toLocaleString("ru-RU"),
+                        paintTime: new Date().toLocaleString("ru-RU"),
                         ip: State.playerIp
                     });
                 }
@@ -103,12 +102,6 @@
         }
     };
 
-    setInterval(() => {
-        if (State.pixelBuffer.length > 0) {
-            Helpers.sendToSheet([...State.pixelBuffer]);
-            State.pixelBuffer = [];
-        }
-    }, CONFIG.sendInterval);
-
     Interceptor.init();
+    console.log("%c[23 Stats] %cРежим прямой передачи активен.", "color: #00ff00;", "color: #fff;");
 })();
