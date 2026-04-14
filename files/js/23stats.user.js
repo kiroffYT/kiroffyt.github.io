@@ -87,11 +87,15 @@
                         time: new Date().toISOString()
                     });
                 }
-            } catch(e) {}
+            } catch(e) { if(CONFIG.debug) console.error("Me error", e); }
         },
 
         handlePaint(body) {
-            if (!body || !State.myInfo) return;
+            if (!State.myInfo) {
+                if(CONFIG.debug) console.warn("[23 Stats] Данные игрока еще не получены, пиксель не записан.");
+                return;
+            }
+
             try {
                 const payload = JSON.parse(body);
                 const coords = payload.coords || [];
@@ -100,15 +104,15 @@
                 for (let i = 0; i < coords.length; i += 2) {
                     State.pixelBuffer.push({
                         type: 'pixel',
-                        uid: State.myInfo.id,
-                        unm: State.myInfo.name,
+                        uid: State.myInfo.id || 'N/A',
+                        unm: State.myInfo.name || 'N/A',
                         x: coords[i],
                         y: coords[i+1],
                         c: colors[i/2],
                         t: new Date().toISOString()
                     });
                 }
-            } catch(e) {}
+            } catch(e) { if(CONFIG.debug) console.error("Paint error", e); }
         }
     };
 
