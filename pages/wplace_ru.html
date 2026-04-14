@@ -2,9 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>23 КАЗАКА | ЦИФРОВОЙ ФРОНТ</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        /* Базовые настройки страницы */
         body {
             background-color: #121212;
             color: #ffffff;
@@ -14,95 +16,135 @@
             align-items: center;
             padding: 20px;
             line-height: 1.6;
+            margin: 0;
+            overflow-x: hidden;
         }
 
+        /* Главный контейнер */
         .pixel-border {
             border: 4px solid #fff;
             padding: 20px;
-            max-width: 600px;
+            width: 95%;
+            max-width: 650px;
             box-shadow: 8px 8px 0px #444;
             background: #1a1a1a;
             margin-bottom: 20px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
         }
 
-        h1 { color: #ff4444; font-size: 18px; text-align: center; }
+        h1 { 
+            color: #ff4444; 
+            font-size: 16px; 
+            text-align: center; 
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
         
         .accent { color: #4444ff; }
 
-        .btn {
-            display: inline-block;
-            background: #ffffff;
-            color: #000;
+        /* Стили шагов инструкции */
+        .step {
+            border-bottom: 2px dashed #333;
+            padding: 20px 0;
+            font-size: 11px;
+            word-wrap: break-word;
+        }
+
+        .step:last-of-type {
+            border-bottom: none;
+        }
+
+        .desc {
+            font-size: 9px;
+            color: #ccc;
+            margin-top: 12px;
+            display: block;
+        }
+
+        /* Исправление отображения скриншотов */
+        .screenshot {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #4444ff;
+            margin: 15px auto 5px auto;
+            image-rendering: pixelated;
+            box-sizing: border-box;
+            box-shadow: 4px 4px 0px #222;
+        }
+
+        /* Блок с наградами */
+        .loot-box {
+            margin-top: 25px;
             padding: 15px;
-            text-decoration: none;
-            margin-top: 20px;
-            box-shadow: 5px 5px 0px #4444ff;
-            transition: 0.2s;
+            background: #2e1a05;
+            border: 4px double #ffcc00;
+            text-align: center;
+            font-size: 9px;
+            box-sizing: border-box;
         }
 
-        .btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 7px 7px 0px #ff4444;
-        }
-
-        .manifesto {
+        .loot-box h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
             font-size: 12px;
-            border-top: 2px dashed #555;
-            margin-top: 15px;
-            padding-top: 15px;
+            margin-top: 0;
         }
 
+        /* Ссылки */
+        a { color: #4444ff; text-decoration: underline; }
+        a:hover { color: #ff4444; background: #fff; text-decoration: none; }
+
+        /* Анимированный фон (CRT/Пиксельный шум) */
         #pixel-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Фон должен быть сзади контента */
-            overflow: hidden;
-            background-color: #0a0a0a; /* Очень темный фон */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background-color: #0a0a0a;
         }
 
         #pixel-bg::before {
             content: " ";
             display: block;
             position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px; /* Размер строки */
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background-size: 100% 4px;
             z-index: 2;
+            pointer-events: none;
         }
 
         #pixel-bg::after {
             content: " ";
             display: block;
             position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gAFWPAAS4OEBswZcEEXIghDAApsBofwS/wEwAAAABJRU5ErkJggg=='); /* Микро-пиксель для шума */
+            top: 0; left: 0; bottom: 0; right: 0;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36z8gAFWPAAS4OEBswZcEEXIghDAApsBofwS/wEwAAAABJRU5ErkJggg==');
             background-repeat: repeat;
-            opacity: 0.05; /* Еле заметно */
+            opacity: 0.07;
             z-index: 1;
-            animation: noise 0.2s infinite; /* Частое мерцание */
+            animation: noise 0.2s infinite;
+            pointer-events: none;
         }
 
         @keyframes noise {
             0% { transform: translate(0,0); }
-            10% { transform: translate(-5px, -5px); }
-            20% { transform: translate(-10px, 5px); }
-            30% { transform: translate(5px, -10px); }
-            40% { transform: translate(-5px, 15px); }
-            50% { transform: translate(-10px, -5px); }
-            60% { transform: translate(15px, 5px); }
-            70% { transform: translate(0px, 10px); }
-            80% { transform: translate(-15px, 0px); }
-            90% { transform: translate(10px, 5px); }
-            100% { transform: translate(5px, 0px); }
+            10% { transform: translate(-1px, -1px); }
+            30% { transform: translate(-2px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            70% { transform: translate(1px, 2px); }
+            90% { transform: translate(-1px, 1px); }
+            100% { transform: translate(0,0); }
+        }
+
+        .footer-text {
+            font-size: 8px;
+            color: #555;
+            margin-top: 10px;
+            text-align: center;
         }
     </style>
 </head>
@@ -120,7 +162,7 @@
         <div class="step">
             <p><span class="accent">02.</span> Высадка на десант</p>
             <p class="desc">Нам нужно занять плацдарм. Переходи по <a href="https://wplace.live/?lat=84.6898137326022&lng=-175.95711914062503">координатам</a>. Это левый верхний угол нашего первого рисунка. И обязательно добавь эту координату в "Избранное"!</p>
-            <img src="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/pic1.png?raw=true" alt="Скриншот координат" class="screenshot">
+            <img src="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/pic1.png?raw=true" alt="Координаты" class="screenshot">
         </div>
 
         <div class="step">
@@ -131,18 +173,18 @@
         <div class="step">
             <p><span class="accent">04.</span> Боевые скрипты</p>
             <p class="desc">В TamperMonkey нужно установить два скрипта: "BlueMarble" и наш командный скрипт.</p>
-            <img src="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/pic2.png?raw=true" alt="Скриншоты скриптов" class="screenshot">
+            <img src="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/pic2.png?raw=true" alt="Скрипты" class="screenshot">
         </div>
 
         <div class="step">
             <p><span class="accent">05.</span> Развертка трафарета</p>
             <p class="desc">Скачай <a href="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/template.png?raw=true">трафарет рисунка</a> и установи его строго по координатам.</p>
-            <img src="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/pic3.gif?raw=true" alt="Настройка трафарета" class="screenshot">
+            <img src="https://github.com/kiroffYT/kiroffyt.github.io/blob/main/img/pic3.gif?raw=true" alt="Трафарет" class="screenshot">
         </div>
 
         <div class="step">
             <p><span class="accent">06.</span> Удержание позиций</p>
-            <p class="desc">Рисуй строго по шаблону и прокачивай профиль. Чем выше уровень, тем сильнее наш клан.</p>
+            <p class="desc">Рисуй строго по шаблону и прокачивай профиль. Чем выше уровень, тем сильнее наш клан. Один пиксель — один шаг к победе.</p>
         </div>
 
         <div class="loot-box">
@@ -151,7 +193,7 @@
         </div>
     </div>
 
-    <p style="font-size: 8px; color: #666;">[ СИСТЕМА ГОТОВА К РАБОТЕ ]</p>
+    <p class="footer-text">[ СИСТЕМА ГОТОВА К РАБОТЕ. СВЯЗЬ УСТАНОВЛЕНА ]</p>
 
 </body>
 </html>
